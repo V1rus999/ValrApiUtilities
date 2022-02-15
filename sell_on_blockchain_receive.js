@@ -2,7 +2,6 @@ const config = require("./config");
 const { connectToWs } = require("./utilities/websocket");
 const { orders, setConfig } = require("./utilities/valr-api");
 
-let balances = {};
 let receives = {};
 
 async function main() {
@@ -28,27 +27,10 @@ const wsCallback = {
 };
 
 function handleMessage(data) {
-  if (data.type === "BALANCE_UPDATE") {
-    handleBalanceUpdate(data.data);
-  } else if (data.type === "NEW_ACCOUNT_HISTORY_RECORD") {
+  if (data.type === "NEW_ACCOUNT_HISTORY_RECORD") {
     handleAccountHistoryUpdate(data.data);
   } else if (data.type === "INSTANT_ORDER_COMPLETED") {
     l(data);
-  }
-}
-
-function handleBalanceUpdate(balanceUpdateData) {
-  const symbol = balanceUpdateData.currency.symbol;
-  if (balances[symbol]) {
-    l(`Balance update for ${symbol}`, {
-      available: balanceUpdateData.available,
-      reserved: balanceUpdateData.reserved,
-      total: balanceUpdateData.total,
-    });
-    balances[symbol] = balanceUpdateData;
-  } else {
-    l(`Adding initial balance for ${symbol}`, balanceUpdateData.total);
-    balances[symbol] = balanceUpdateData;
   }
 }
 
